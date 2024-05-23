@@ -1,6 +1,3 @@
-import OpenAI from 'openai';
-import { ChatCompletion } from 'openai/src/resources/chat/completions.js';
-import { ChangeEvent, useState, MouseEvent } from 'react';
 import DreamAnalyser from './components/dreamAnalyser';
 
 export default function Home() {
