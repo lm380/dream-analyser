@@ -2,7 +2,7 @@
 
 import { Message } from 'ai';
 import { useChat } from 'ai/react';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card, ListCard } from './card';
 import { CardSkeleton } from './skeleton';
 
