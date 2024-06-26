@@ -5,7 +5,7 @@ import { useChat } from 'ai/react';
 import { useEffect, useRef, useState } from 'react';
 import { Card, ListCard } from './card';
 import { CardSkeleton } from './skeleton';
-import { extractDreamContent } from '../utils/utilityfuncs';
+import { extractDreamContent } from '../utils/utilityFuncs';
 
 const DreamAnalyser = () => {
   const [analysis, setAnalysis] = useState<string>('');
