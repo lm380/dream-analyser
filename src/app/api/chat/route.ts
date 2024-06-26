@@ -2,10 +2,10 @@
 import { auth } from '@/auth';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
 import { OpenAI } from 'openai';
-import { extractDreamContent } from '@/app/utils/utilityfuncs';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { Pool } from '@neondatabase/serverless';
 import { PrismaClient } from '@prisma/client';
+import { extractDreamContent } from '@/app/utils/utilityFuncs';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
