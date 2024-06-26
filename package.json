@@ -26,9 +26,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "browser": {
-      "crypto": false
-    },
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
