@@ -2,7 +2,14 @@ import type { NextAuthConfig } from 'next-auth';
 
 export const authConfig = {
   pages: { signIn: '/login' },
+
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      console.log(url, baseUrl);
+
+      return '/profile';
+    },
     authorized({ auth, request: { nextUrl } }) {
       console.log('in authorize function');
       const isLoggedIn = !!auth?.user;
@@ -10,9 +17,8 @@ export const authConfig = {
       if (isOnDashboard) {
         if (isLoggedIn) return true;
         return false; // Redirect unauthenticated users to login page
-      } else if (isLoggedIn) {
-        return Response.redirect(new URL('/analyser', nextUrl));
       }
+      // console.log(nextUrl);
       return true;
     },
   },

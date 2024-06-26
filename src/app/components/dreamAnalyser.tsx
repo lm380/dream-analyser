@@ -5,10 +5,9 @@ import { useChat } from 'ai/react';
 import { useEffect, useRef, useState } from 'react';
 import { Card, ListCard } from './card';
 import { CardSkeleton } from './skeleton';
+import { extractDreamContent } from '../utils/utilityfuncs';
 
 const DreamAnalyser = () => {
-  const START_OF_LIST = 'Key elements and symbols in the dream:';
-  const END_OF_LIST = 'END OF ELEMENTS FOR ANALYSIS';
   const [analysis, setAnalysis] = useState<string>('');
   const [elementList, setElementList] = useState<string[]>([]);
   const chatContainer = useRef<HTMLDivElement>(null);
@@ -17,15 +16,11 @@ const DreamAnalyser = () => {
     api: '/api/chat',
     onFinish: (message: Message) => {
       const { content } = message;
-      const list = content.substring(
-        content.indexOf(START_OF_LIST) + START_OF_LIST.length,
-        content.indexOf('END OF ELEMENTS FOR ANALYSIS')
-      );
-      const newAnalysis = content.substring(
-        content.indexOf('END OF ELEMENTS FOR ANALYSIS') + END_OF_LIST.length
-      );
-      const listArr = list.split(/\r?\n/);
-      setElementList(listArr);
+
+      const extractedList = extractDreamContent(content, 'list') as string[];
+      const newAnalysis = extractDreamContent(content, 'analysis') as string;
+
+      setElementList(extractedList);
       setAnalysis(newAnalysis);
     },
   });
