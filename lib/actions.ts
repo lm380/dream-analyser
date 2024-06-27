@@ -1,11 +1,10 @@
 'use server';
 
 import { z } from 'zod';
-import bcrypt from 'bcryptjs';
 import prisma from './prisma';
-import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { PrismaClient } from '@prisma/client/extension';
+import * as argon2 from 'argon2';
 
 const DreamSchema = z.object({
   id: z.string(),
@@ -65,7 +64,7 @@ export async function createUser(prevState: State, formData: FormData) {
   }
 
   const { name, email, password } = validatedFields.data;
-  const encryptedPassword = await bcrypt.hash(password, 10);
+  const encryptedPassword = await argon2.hash(password);
   try {
     await prisma.user.create({
       data: {

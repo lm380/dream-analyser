@@ -4,7 +4,7 @@ import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import { sql } from '@vercel/postgres';
 import type { User } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import * as argon2 from 'argon2';
 
 async function getUser(email: string): Promise<User | undefined> {
   try {
@@ -29,8 +29,8 @@ export const { auth, signIn, signOut } = NextAuth({
           const { email, password } = parsedCredentials.data;
           const user = await getUser(email);
           if (!user) return null;
-          const bcryptMatch = await bcrypt.compare(password, user.password);
-          const passwordsMatch = bcryptMatch || password === user.password;
+          const argonMatch = await argon2.verify(user.password, password);
+          const passwordsMatch = argonMatch || password === user.password;
           if (passwordsMatch) return user;
         }
 
