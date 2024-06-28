@@ -11,7 +11,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export const runtime = 'edge';
+// export const runtime = 'edge';
 
 const neon = new Pool({ connectionString: process.env.POSTGRES_PRISMA_URL });
 const adapter = new PrismaNeon(neon);
