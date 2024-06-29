@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate && npm rebuild argon2 --build-from-source"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.3",
