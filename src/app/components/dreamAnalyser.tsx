@@ -86,7 +86,7 @@ const DreamAnalyser = () => {
       {!messages.length && (
         <form
           onSubmit={handleSubmit}
-          className={'w-4/5 absolute right-0 left-[10%] bottom-[2%]'}
+          className={'w-4/5 absolute right-0 left-[18%] bottom-[2%]'}
         >
           <input
             name="input-field"

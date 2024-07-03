@@ -1,10 +1,12 @@
 'use server';
 
-import { z } from 'zod';
+import { string, z } from 'zod';
 import prisma from './prisma';
 import { redirect } from 'next/navigation';
 import { PrismaClient } from '@prisma/client/extension';
 import * as argon2 from 'argon2';
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 
 const DreamSchema = z.object({
   id: z.string(),
@@ -32,6 +34,11 @@ const CreateUser = FormSchema.omit({
   createdAt: true,
   updatedAt: true,
   dreams: true,
+});
+const UpdateUser = CreateUser.extend({
+  retypedPassword: z.string({}),
+}).omit({
+  email: true,
 });
 const CreateDream = DreamSchema.omit({
   id: true,
@@ -69,6 +76,52 @@ export async function createUser(prevState: State, formData: FormData) {
     await prisma.user.create({
       data: {
         email: email,
+        name: name,
+        password: encryptedPassword,
+      },
+    });
+  } catch (e) {
+    return { message: 'Database Error: Failed to Create User.' };
+  }
+  //   revalidatePath('/analyser');
+  redirect('/');
+}
+
+export async function updateUser(
+  email: string,
+  prevState: State,
+  formData: FormData
+) {
+  const validatedFields = UpdateUser.safeParse({
+    name: formData.get('name'),
+    password: formData.get('password'),
+    retypedPassword: formData.get('password-retype'),
+  });
+
+  console.log(validatedFields);
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create User',
+    };
+  }
+
+  const { name, password, retypedPassword } = validatedFields.data;
+  if (retypedPassword !== password) {
+    return {
+      errors: { password: ["New passwords don't match"] },
+      message: "Passwords don't match",
+    };
+  }
+
+  const encryptedPassword = await argon2.hash(password);
+  try {
+    await prisma.user.update({
+      where: {
+        email: email,
+      },
+      data: {
         name: name,
         password: encryptedPassword,
       },
@@ -122,4 +175,23 @@ export async function createDream(
   }
   //   revalidatePath('/analyser');
   redirect('/');
+}
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData
+) {
+  try {
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error;
+  }
 }

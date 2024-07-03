@@ -11,10 +11,10 @@ export const authConfig = {
       return '/profile';
     },
     authorized({ auth, request: { nextUrl } }) {
-      console.log('in authorize function');
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/analyser');
-      if (isOnDashboard) {
+      const isOnAnalayser = nextUrl.pathname.startsWith('/analyser');
+      const isOnProfile = nextUrl.pathname.startsWith('/profile');
+      if (isOnAnalayser || isOnProfile) {
         if (isLoggedIn) return true;
         return false; // Redirect unauthenticated users to login page
       }
