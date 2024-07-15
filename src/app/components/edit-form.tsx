@@ -2,14 +2,12 @@
 
 import Link from 'next/link';
 import {
-  CheckIcon,
-  ClockIcon,
   EnvelopeIcon,
   LockClosedIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { useFormState } from 'react-dom';
-import { createUser, State, updateUser } from '../../../lib/actions';
+import { State, updateUser } from '../../../lib/actions';
 import { User } from '@prisma/client';
 
 export default function EditForm({ user }: { user: User }) {
@@ -21,10 +19,13 @@ export default function EditForm({ user }: { user: User }) {
   );
   return (
     <form action={dispatch} className="space-y-3">
-      <div className="rounded-md bg-gray-50 p-4 md:p-6">
+      <div className="rounded-md bg-gray-50 p-4 md:p-6 text-black">
         {/* User Name */}
         <div className="mb-4">
-          <label htmlFor="name" className="mb-2 block text-sm font-medium">
+          <label
+            htmlFor="name"
+            className="mb-2 block text-sm font-medium text-gray-400"
+          >
             Enter your name
           </label>
           <div className="relative mt-2 rounded-md">
@@ -81,11 +82,12 @@ export default function EditForm({ user }: { user: User }) {
       {/* User Password */}
       <div className="mb-4">
         <label htmlFor="password" className="mb-2 block text-sm font-medium">
-          Enter your Password
+          Enter your new password
         </label>
         <div className="relative mt-2 rounded-md">
           <div className="relative">
             <input
+              autoComplete="new-password"
               id="password"
               name="password"
               placeholder="Enter your new password"

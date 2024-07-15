@@ -15,11 +15,14 @@ export default async function Profile() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-xl lg:flex">
-        <h3>Edit</h3>
-        <p>Welcome {name}!</p>
-        <Link href={'/'}>Go home</Link>
-        <EditForm user={user!} />
+      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-xl lg:flex flex-col">
+        <div className="flex justify-between w-full">
+          <p className="">Welcome {name}!</p>
+          <Link href={'/'}>Go home</Link>
+        </div>
+        <div className="w-full mt-3">
+          <EditForm user={user!} />
+        </div>
       </div>
     </main>
   );

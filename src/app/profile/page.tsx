@@ -19,13 +19,20 @@ export default async function Profile() {
     },
   });
 
-  console.log(dreams);
+  const addContext = () => {};
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-xl lg:flex">
-        <h3>This is a profile page</h3>
-        <p>Welcome {name}!</p>
+      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-xl lg:flex flex-col">
+        <div className="flex flex-row w-full">
+          <p className="text-3xl">Welcome {name}!</p>
+          <Link className="absolute right-[2%] top-[5%]" href={'/profile/edit'}>
+            Edit Account
+          </Link>
+        </div>
+        <div className="content w-full mt-[5%]">
+          <h3>This is a profile page</h3>
+        </div>
       </div>
     </main>
   );

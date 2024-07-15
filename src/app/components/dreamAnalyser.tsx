@@ -2,17 +2,18 @@
 
 import { Message } from 'ai';
 import { useChat } from 'ai/react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Card, ListCard } from './card';
 import { CardSkeleton } from './skeleton';
 import { extractDreamContent } from '../utils/utilityFuncs';
+import { DreamRecorder } from './dreamRecorder';
 
 const DreamAnalyser = () => {
   const [analysis, setAnalysis] = useState<string>('');
   const [elementList, setElementList] = useState<string[]>([]);
   const chatContainer = useRef<HTMLDivElement>(null);
 
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
+  let { messages, input, handleInputChange, handleSubmit, setInput } = useChat({
     api: '/api/chat',
     onFinish: (message: Message) => {
       const { content } = message;
@@ -24,6 +25,14 @@ const DreamAnalyser = () => {
       setAnalysis(newAnalysis);
     },
   });
+
+  const addRecording = useCallback(
+    (recordedText: string) => {
+      setInput(recordedText);
+      console.log(input);
+    },
+    [input, setInput]
+  );
 
   const scroll = () => {
     const { offsetHeight, scrollHeight, scrollTop } =
@@ -88,17 +97,19 @@ const DreamAnalyser = () => {
           onSubmit={handleSubmit}
           className={'w-4/5 absolute right-0 left-[18%] bottom-[2%]'}
         >
-          <input
+          <textarea
             name="input-field"
-            type="text"
             placeholder="tell me your dream"
             onChange={handleInputChange}
             value={input}
             className={'p-2 rounded-md w-4/5'}
           />
+          <DreamRecorder updateInput={addRecording} />
           <button
             type="submit"
-            className={'w-1/6 p-2 rounded-md bg-[#fdef96] ml-[3%]'}
+            className={
+              'w-1/8 p-2 rounded-md bg-[#fdef96] ml-[3%] text-gray-400'
+            }
           >
             submit
           </button>

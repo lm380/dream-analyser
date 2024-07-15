@@ -21,13 +21,14 @@ model Dream {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-  dreams    Dream[]
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  password    String
+  lifeContext String
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @updatedAt @map(name: "updated_at")
+  dreams      Dream[]
 
   @@map(name: "users")
 }
