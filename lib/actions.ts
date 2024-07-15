@@ -29,7 +29,9 @@ const FormSchema = z.object({
   dreams: z.array(DreamSchema),
 });
 
-const CreateUser = FormSchema.omit({
+const CreateUser = FormSchema.extend({
+  lifeContext: z.string(),
+}).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -78,6 +80,7 @@ export async function createUser(prevState: State, formData: FormData) {
         email: email,
         name: name,
         password: encryptedPassword,
+        lifeContext: '',
       },
     });
   } catch (e) {
