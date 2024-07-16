@@ -1,6 +1,6 @@
 'use server';
 
-import { string, z } from 'zod';
+import { z } from 'zod';
 import prisma from './prisma';
 import { redirect } from 'next/navigation';
 import { PrismaClient } from '@prisma/client/extension';
@@ -46,6 +46,11 @@ const CreateDream = DreamSchema.omit({
   id: true,
   dreamer: true,
 });
+const UpdateLifeContext = UpdateUser.omit({
+  retypedPassword: true,
+  password: true,
+  name: true,
+});
 
 export type State = {
   errors?: {
@@ -62,8 +67,6 @@ export async function createUser(prevState: State, formData: FormData) {
     email: formData.get('email'),
     password: formData.get('password'),
   });
-
-  console.log(validatedFields);
 
   if (!validatedFields.success) {
     return {
@@ -86,7 +89,6 @@ export async function createUser(prevState: State, formData: FormData) {
   } catch (e) {
     return { message: 'Database Error: Failed to Create User.' };
   }
-  //   revalidatePath('/analyser');
   redirect('/');
 }
 
@@ -100,8 +102,6 @@ export async function updateUser(
     password: formData.get('password'),
     retypedPassword: formData.get('password-retype'),
   });
-
-  console.log(validatedFields);
 
   if (!validatedFields.success) {
     return {
@@ -130,10 +130,31 @@ export async function updateUser(
       },
     });
   } catch (e) {
+    return { message: 'Database Error: Failed to Update User.' };
+  }
+  redirect('/');
+}
+
+export async function updateLifeContext(
+  email: string,
+  prevState: State,
+  formData: FormData
+) {
+  const validatedCircumstances = UpdateLifeContext.safeParse(
+    formData.get('lifeContext')
+  );
+  try {
+    await prisma.user.update({
+      where: {
+        email: email,
+      },
+      data: {
+        lifeContext: validatedCircumstances.data?.lifeContext,
+      },
+    });
+  } catch (e) {
     return { message: 'Database Error: Failed to Create User.' };
   }
-  //   revalidatePath('/analyser');
-  redirect('/');
 }
 
 export async function createDream(

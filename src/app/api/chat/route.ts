@@ -19,7 +19,7 @@ const prismaEdge = new PrismaClient({ adapter });
 
 const getInfo = async () => {
   const info = await auth();
-  const { name, email } = info?.user!;
+  const { email } = info?.user!;
 
   const user = await prismaEdge.user.findUnique({
     where: {
@@ -31,7 +31,7 @@ const getInfo = async () => {
 
 export async function POST(req: Request) {
   const json = await req.json();
-  const { messages, previewToken } = json;
+  const { messages } = json;
 
   const res = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
@@ -50,75 +50,28 @@ export async function POST(req: Request) {
     stream: true,
   });
 
-  const stream = OpenAIStream(
-    res,
-    {
-      async onCompletion(completion: any) {
-        const title = json.messages[0].content.substring(0, 100);
-        const id = json.id;
-        const createdAt = Date.now();
-        const path = `/chat/${id}`;
-        const payload = {
-          id,
-          title,
-          completion,
-          createdAt,
-          path,
-        };
-        const elementList = extractDreamContent(completion, 'list') as string[];
-        const analysis = extractDreamContent(completion, 'analysis') as string;
+  const stream = OpenAIStream(res, {
+    async onCompletion(completion: any) {
+      const title = json.messages[0].content.substring(0, 100);
 
-        console.log(elementList, analysis);
-        const user = await getInfo();
-        // console.log(user);
+      const elementList = extractDreamContent(completion, 'list') as string[];
+      const analysis = extractDreamContent(completion, 'analysis') as string;
+      const user = await getInfo();
 
-        const dreamDetails = {
-          content: analysis,
-          elements: elementList,
-          title: title,
-          dreamerId: user?.id || '',
-        };
-
-        try {
-          await prismaEdge.dream.create({
-            data: {
-              title: title,
-              content: analysis,
-              keyElements: elementList,
-              userId: user?.id || '',
-            },
-          });
-        } catch (e) {
-          console.error(e);
-        }
-
-        // const dream = await prismaEdge.dream.create({
-        //   data: dreamDetails,
-        // });
-
-        // createDream(dreamDetails, prismaEdge);
-      },
-    }
-    //      {
-    //     // This function is called when the API returns a response
-    //     async onCompletion(completion: any) {
-    //       const title = json.messages[0].content.substring(0, 100);
-    //       const id = json.id;
-    //       const createdAt = Date.now();
-    //       const path = `/chat/${id}`;
-    //       const payload = {
-    //         id,
-    //         title,
-    //         completion,
-    //         createdAt,
-    //         path,
-    //       };
-    //       console.log(payload);
-    //       // Here you can store the chat in database
-    //       // ...
-    //     },
-    //   }
-  );
+      try {
+        await prismaEdge.dream.create({
+          data: {
+            title: title,
+            content: analysis,
+            keyElements: elementList,
+            userId: user?.id || '',
+          },
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    },
+  });
 
   return new StreamingTextResponse(stream);
 }
