@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import prisma from '../../../lib/prisma';
 import { auth } from '@/auth';
 import { Profile } from '../components/Profile';

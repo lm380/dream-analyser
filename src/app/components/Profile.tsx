@@ -7,7 +7,6 @@ import { ModalButton } from './ModalButton';
 import { Dream, User } from '@prisma/client';
 import useUser from '@/hooks/useUser';
 import { DreamFrequencyChart } from './DreamFrequencyChart';
-import { WordCloudComponent } from './WordCloud';
 
 interface UserWithDreams extends Partial<User> {
   dreams: Dream[];
