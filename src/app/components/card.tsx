@@ -1,44 +1,68 @@
-export function Card({
-  title,
-  value,
-}: //   type,
-{
-  title: string;
-  value: number | string;
-  //   type: 'invoices' | 'customers' | 'pending' | 'collected';
-}) {
-  //   const Icon = iconMap[type];
+import { useState } from 'react';
 
+export function Card({ title, value }: { title: string; value: string }) {
   return (
-    <div className="rounded-xl p-2 shadow-sm max-h-72 overflow-auto ">
-      {/* {Icon ? <Icon className="h-5 w-5 text-gray-700" /> : null} */}
-      <h3 className="ml-2 text-sm font-medium">{title}</h3>
-      <p className={`rounded px-4 py-8 text-center`}>{value}</p>
+    <div className="bg-indigo-800 p-6 rounded-lg shadow-lg max-h-72 h-72 overflow-auto ">
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className={`rounded px-4 py-8`}>{value}</p>
     </div>
   );
 }
 
-export function ListCard({
-  title,
-  value,
-}: //   type,
-{
-  title: string;
-  value: string[];
-  //   type: 'invoices' | 'customers' | 'pending' | 'collected';
-}) {
-  //   const Icon = iconMap[type];
-
+export function ListCard({ title, value }: { title: string; value: string[] }) {
   return (
-    <div className="rounded-xl p-2 shadow-sm max-h-72 overflow-auto ">
-      {/* {Icon ? <Icon className="h-5 w-5 text-gray-700" /> : null} */}
-      <h3 className="ml-2 text-sm font-medium">{title}</h3>
+    <div className="bg-indigo-800 p-6 rounded-lg shadow-lg max-h-72 h-72 overflow-auto ">
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
 
       <ol className={`rounded px-4 py-8`}>
         {[...value].map((element, index) => (
           <li key={index}>{element}</li>
         ))}
       </ol>
+    </div>
+  );
+}
+
+export function DreamCard({
+  title,
+  content,
+  analysis,
+  keyElements,
+}: {
+  title: string;
+  content: string;
+  analysis: string;
+  keyElements: string[];
+}) {
+  const [expanded, setExpanded] = useState<boolean>(false);
+  return (
+    <div className="bg-indigo-800 p-6 rounded-lg shadow-lg max-h-72 min-h-72 overflow-auto">
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+
+      {expanded ? (
+        <>
+          <h2 className="mt-2 text-lg">Dream Content</h2>
+          <span className={`rounded py-8`}>{content.trim()}</span>
+
+          <h2 className="mt-2 text-lg">Given Analysis</h2>
+          <span className={`rounded py-8`}>{analysis.trim()}</span>
+
+          <h2 className="mt-2 text-lg">Key Elements in Dream</h2>
+          <ol className={`rounded px-4`}>
+            {[...keyElements].map((element, index) => (
+              <li key={index}>{element}</li>
+            ))}
+          </ol>
+        </>
+      ) : (
+        <p>{content.substring(0, 100)}...</p>
+      )}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="text-purple-300 mt-2"
+      >
+        {expanded ? 'Show Less' : 'Show More'}
+      </button>
     </div>
   );
 }

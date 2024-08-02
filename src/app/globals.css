@@ -15,7 +15,10 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
-
+input,
+textarea {
+  color: black;
+}
 body {
   color: rgb(156 163 175);
   background: linear-gradient(

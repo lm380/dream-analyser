@@ -15,6 +15,9 @@ model Dream {
   id          String   @id @default(cuid())
   title       String
   content     String
+  analysis    String    
+  theme       String
+  created_at  DateTime @default(now()) @map(name: "created_at")
   keyElements String[]
   User   User?   @relation(fields: [userId], references: [id])
   userId String?
@@ -31,4 +34,11 @@ model User {
   dreams      Dream[]
 
   @@map(name: "users")
+}
+
+model RateLimit {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  count     Int
+  timestamp BigInt
 }

@@ -1,7 +1,7 @@
 import { auth } from '@/auth';
 import Link from 'next/link';
 import prisma from '../../../../lib/prisma';
-import EditForm from '@/app/components/edit-form';
+import EditForm from '@/app/components/EditForm';
 
 export default async function Profile() {
   const info = await auth();

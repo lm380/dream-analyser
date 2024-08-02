@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 import {
-  CheckIcon,
-  ClockIcon,
   EnvelopeIcon,
   LockClosedIcon,
   UserCircleIcon,
@@ -20,7 +18,6 @@ export default function Form() {
   return (
     <form action={dispatch} className="space-y-3">
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
-        {/* User Name */}
         <div className="mb-4">
           <label htmlFor="name" className="mb-2 block text-sm font-medium">
             Enter your name
@@ -85,6 +82,7 @@ export default function Form() {
             <input
               id="password"
               name="password"
+              minLength={6}
               placeholder="Enter your password"
               type="password"
               className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
@@ -110,7 +108,7 @@ export default function Form() {
         >
           Cancel
         </Link>
-        <button type="submit">Create Invoice</button>
+        <button type="submit">Create account</button>
       </div>
     </form>
   );

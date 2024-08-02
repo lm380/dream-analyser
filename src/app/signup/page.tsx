@@ -1,4 +1,4 @@
-import Form from '@/app/components/create-form';
+import Form from '@/app/components/CreateForm';
 import { Metadata } from 'next';
 import Link from 'next/link';
 

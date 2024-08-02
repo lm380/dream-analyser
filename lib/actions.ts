@@ -12,6 +12,7 @@ const DreamSchema = z.object({
   id: z.string(),
   title: z.string(),
   content: z.string(),
+  analysis: z.string(),
   keyElements: z.string().array(),
   dreamer: z.any(),
   dreamerId: z.string(),
@@ -29,9 +30,7 @@ const FormSchema = z.object({
   dreams: z.array(DreamSchema),
 });
 
-const CreateUser = FormSchema.extend({
-  lifeContext: z.string(),
-}).omit({
+const CreateUser = FormSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -46,7 +45,9 @@ const CreateDream = DreamSchema.omit({
   id: true,
   dreamer: true,
 });
-const UpdateLifeContext = UpdateUser.omit({
+const UpdateLifeContext = UpdateUser.extend({
+  lifeContext: z.string(),
+}).omit({
   retypedPassword: true,
   password: true,
   name: true,
@@ -58,7 +59,7 @@ export type State = {
     email?: string[];
     password?: string[];
   };
-  message: string | null;
+  message?: string | null;
 };
 
 export async function createUser(prevState: State, formData: FormData) {
@@ -137,12 +138,13 @@ export async function updateUser(
 
 export async function updateLifeContext(
   email: string,
-  prevState: State,
+  prevState: State | undefined,
   formData: FormData
 ) {
-  const validatedCircumstances = UpdateLifeContext.safeParse(
-    formData.get('lifeContext')
-  );
+  const validatedCircumstances = UpdateLifeContext.safeParse({
+    lifeContext: formData.get('context'),
+  });
+
   try {
     await prisma.user.update({
       where: {
@@ -160,6 +162,7 @@ export async function updateLifeContext(
 export async function createDream(
   dreamDetails: {
     content: string;
+    analysis: string;
     elements: string[];
     title: string;
     dreamerId: string;
@@ -168,6 +171,7 @@ export async function createDream(
 ) {
   const validatedFields = CreateDream.safeParse({
     title: dreamDetails.title,
+    analysis: dreamDetails.analysis,
     content: dreamDetails.content,
     keyElements: dreamDetails.elements,
     dreamerId: dreamDetails.dreamerId,
@@ -182,13 +186,15 @@ export async function createDream(
     };
   }
 
-  const { title, content, keyElements, dreamerId } = validatedFields.data;
+  const { title, content, keyElements, dreamerId, analysis } =
+    validatedFields.data;
   // const encryptedContent = await bcrypt.hash(content, 10);
   // need to find some way to encrypt the content and decrypt hashing won't work
   try {
     await prismaClient.dream.create({
       data: {
         title: title,
+        analysis: analysis,
         content: content,
         keyElements: keyElements,
         dreamerId: dreamerId,

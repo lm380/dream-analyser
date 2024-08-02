@@ -1,39 +1,37 @@
-import { auth } from '@/auth';
 import Link from 'next/link';
 import prisma from '../../../lib/prisma';
+import { auth } from '@/auth';
+import { Profile } from '../components/Profile';
 
-export default async function Profile() {
-  const info = await auth();
-  const name = info?.user?.name;
-  const email = info?.user?.email;
+export default async function ProfilePage() {
+  const session = await auth();
 
+  if (!session) {
+    return (
+      <div>
+        <h1>Access Denied</h1>
+        <p>You need to be signed in to view this page.</p>
+        <a href="/auth/signin">Sign In</a>
+      </div>
+    );
+  }
+
+  const email = session.user?.email;
   const user = await prisma.user.findUnique({
     where: {
       email: email || '',
     },
-  });
-
-  const dreams = await prisma.dream.findMany({
-    where: {
-      userId: user?.id,
+    select: {
+      email: true,
+      name: true,
+      lifeContext: true,
+      dreams: {
+        orderBy: {
+          created_at: 'desc',
+        },
+      },
     },
   });
 
-  const addContext = () => {};
-
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-xl lg:flex flex-col">
-        <div className="flex flex-row w-full">
-          <p className="text-3xl">Welcome {name}!</p>
-          <Link className="absolute right-[2%] top-[5%]" href={'/profile/edit'}>
-            Edit Account
-          </Link>
-        </div>
-        <div className="content w-full mt-[5%]">
-          <h3>This is a profile page</h3>
-        </div>
-      </div>
-    </main>
-  );
+  return <Profile initialUser={user!} />;
 }
