@@ -1,6 +1,6 @@
 'use client';
 import { ModalProvider } from '@/contexts/ModalContext';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { AddContext } from './AddContext';
 import { DreamCard } from './Card';
 import { ModalButton } from './ModalButton';
@@ -15,8 +15,9 @@ interface UserWithDreams extends Partial<User> {
 export const Profile = ({ initialUser }: { initialUser: UserWithDreams }) => {
   const { user, isLoading, isError, mutate } = useUser();
   const { name, email, lifeContext, dreams } = user || initialUser;
-
-  const ascendingDreams = dreams.reverse();
+  const newestDreams = useMemo(() => {
+    return [...dreams].reverse().slice(0, 4);
+  }, [dreams]);
 
   if (isLoading)
     return (
@@ -38,7 +39,7 @@ export const Profile = ({ initialUser }: { initialUser: UserWithDreams }) => {
           <p className="text-xl sm:text-2xl md:text-3xl">Welcome {name}!</p>
         </div>
         <div className="content w-full mt-[5%]">
-          <DreamFrequencyChart dreams={ascendingDreams} />
+          <DreamFrequencyChart dreams={dreams} />
           {/* <WordCloudComponent dreams={dreams} /> */}
           {email && (
             <ModalProvider>
@@ -52,7 +53,7 @@ export const Profile = ({ initialUser }: { initialUser: UserWithDreams }) => {
           {dreams.length > 0 && <span>Recent Dreams:</span>}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-            {dreams.slice(0, 4).map((dream: Dream) => {
+            {newestDreams.map((dream: Dream) => {
               return (
                 <div
                   key={dream.id}

@@ -31,7 +31,10 @@ const ResponsiveNavigation = ({
   };
 
   return (
-    <nav className="bg-indigo-900 p-4">
+    <nav
+      className="bg-indigo-900 p-4"
+      onBlur={(e) => !e.relatedTarget && toggleMenu()}
+    >
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/">
           <span className="text-2xl font-serif text-purple-300 cursor-pointer">
@@ -58,11 +61,15 @@ const ResponsiveNavigation = ({
             </svg>
           </button>
         ) : (
-          <div className="space-x-4">
+          <div className="space-x-8">
             {user ? (
               <>
-                <NavLinks isMobile={isMobile} />
-                <form action={signOutAction} className="inline-block">
+                <NavLinks isMobile={isMobile} closeMenu={toggleMenu} />
+                <form
+                  action={signOutAction}
+                  onSubmit={toggleMenu}
+                  className="inline-block"
+                >
                   <button className="text-white hover:text-purple-300 cursor-pointer">
                     Sign Out
                   </button>
@@ -89,8 +96,8 @@ const ResponsiveNavigation = ({
         <div className="mt-4">
           {user ? (
             <>
-              <NavLinks isMobile={isMobile} />
-              <form action={signOutAction}>
+              <NavLinks isMobile={isMobile} closeMenu={toggleMenu} />
+              <form action={signOutAction} onSubmit={toggleMenu}>
                 <button className="block w-full text-left text-white hover:text-purple-300 cursor-pointer py-2">
                   Sign Out
                 </button>
@@ -99,12 +106,18 @@ const ResponsiveNavigation = ({
           ) : (
             <>
               <Link href="/login">
-                <span className="block text-white hover:text-purple-300 cursor-pointer py-2">
+                <span
+                  onClick={toggleMenu}
+                  className="block text-white hover:text-purple-300 cursor-pointer py-2"
+                >
                   Login
                 </span>
               </Link>
               <Link href="/signup">
-                <span className="block text-white hover:text-purple-300 cursor-pointer py-2">
+                <span
+                  onClick={toggleMenu}
+                  className="block text-white hover:text-purple-300 cursor-pointer py-2"
+                >
                   Sign up
                 </span>
               </Link>

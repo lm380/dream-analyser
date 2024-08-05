@@ -118,7 +118,6 @@ export const DreamFrequencyChart = ({ dreams }: { dreams: Dream[] }) => {
   }, [dreams]);
 
   if (dreams.length === 0) return <div>No dreams recorded yet.</div>;
-
   return (
     <div className="w-1/2">
       <h3>Dream Frequency</h3>
