@@ -18,14 +18,24 @@ export const Profile = ({ initialUser }: { initialUser: UserWithDreams }) => {
 
   const ascendingDreams = dreams.reverse();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading user data</div>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
+  if (isError)
+    return (
+      <div className="flex justify-center items-center h-screen text-red-500">
+        Error loading user data
+      </div>
+    );
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-xl lg:flex flex-col">
+    <main className="flex min-h-screen flex-col items-center justify-between p-4 sm:p-8 md:p-16 lg:p-24">
+      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm sm:text-base md:text-lg lg:text-xl">
         <div className="flex flex-row w-full">
-          <p className="text-3xl">Welcome {name}!</p>
+          <p className="text-xl sm:text-2xl md:text-3xl">Welcome {name}!</p>
         </div>
         <div className="content w-full mt-[5%]">
           <DreamFrequencyChart dreams={ascendingDreams} />
@@ -39,14 +49,14 @@ export const Profile = ({ initialUser }: { initialUser: UserWithDreams }) => {
           )}
           <br />
 
-          {dreams.length > 0 && <span>Dreams:</span>}
+          {dreams.length > 0 && <span>Recent Dreams:</span>}
 
-          <div className="flex flex-wrap gap-4 flex-row max-w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
             {dreams.slice(0, 4).map((dream: Dream) => {
               return (
                 <div
                   key={dream.id}
-                  className="rounded-lg w-2/5 border border-gray-600"
+                  className="rounded-lg border border-gray-600"
                 >
                   <DreamCard
                     title={dream.title}

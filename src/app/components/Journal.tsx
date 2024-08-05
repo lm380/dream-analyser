@@ -3,6 +3,7 @@ import React from 'react';
 import { DreamCard } from './Card';
 import { Dream, User } from '@prisma/client';
 import useUser from '@/hooks/useUser';
+import { LazyDreamList } from './LazyDreamsList';
 
 interface UserWithDreams extends Partial<User> {
   dreams: Dream[];
@@ -25,9 +26,9 @@ export const Journal = ({ initialUser }: { initialUser: UserWithDreams }) => {
 
       {/* <Pagination /> */}
 
-      {dreams.length > 0 && <span>Dreams:</span>}
+      <LazyDreamList dreams={dreams} />
 
-      <div className="flex flex-wrap gap-4 flex-row max-w-full">
+      {/* <div className="flex flex-wrap gap-4 flex-row max-w-full">
         {dreams.map((dream: Dream) => {
           return (
             <div
@@ -43,7 +44,7 @@ export const Journal = ({ initialUser }: { initialUser: UserWithDreams }) => {
             </div>
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 };
