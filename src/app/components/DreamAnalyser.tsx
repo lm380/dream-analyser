@@ -13,7 +13,14 @@ const DreamAnalyser = () => {
   const [elementList, setElementList] = useState<string[]>([]);
   const chatContainer = useRef<HTMLDivElement>(null);
 
-  let { messages, input, handleInputChange, handleSubmit, setInput } = useChat({
+  let {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    setInput,
+    setMessages,
+  } = useChat({
     api: '/api/chat',
     onFinish: (message: Message) => {
       const { content } = message;
@@ -36,6 +43,13 @@ const DreamAnalyser = () => {
     },
     [setInput]
   );
+
+  const newDreamHandler = () => {
+    setAnalysis('');
+    setElementList([]);
+    setMessages([]);
+    setInput('');
+  };
 
   const renderResponse = () => {
     return (
@@ -78,7 +92,7 @@ const DreamAnalyser = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-indigo-950 pb-20 pt-8 px-4">
+    <div className="flex flex-col min-h-screen w-full bg-indigo-950 pb-24 pt-8 px-4">
       <main className="flex-grow flex flex-col items-center">
         <div
           ref={chatContainer}
@@ -123,6 +137,15 @@ const DreamAnalyser = () => {
               </div>
             </div>
           </form>
+        )}
+        {messages.length > 0 && (
+          <button
+            type="button"
+            onClick={newDreamHandler}
+            className="mt-4 px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-600 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-700"
+          >
+            Record new dream
+          </button>
         )}
       </main>
     </div>
