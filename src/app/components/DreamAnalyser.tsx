@@ -92,7 +92,8 @@ const DreamAnalyser = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-indigo-950 pb-24 pt-8 px-4">
+    <div className="flex flex-col min-h-screen w-full bg-indigo-950 pb-28 pt-8 px-4">
+      <h1 className="text-4xl font-serif mb-8">Record a Dream</h1>
       <main className="flex-grow flex flex-col items-center">
         <div
           ref={chatContainer}
