@@ -78,31 +78,31 @@ const DreamAnalyser = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-[55vh] w-full bg-indigo-950">
-      <main className="flex-grow flex flex-col">
-        <div ref={chatContainer} className="flex-grow overflow-y-auto mb-8">
+    <div className="flex flex-col min-h-screen w-full bg-indigo-950 pb-20 pt-8 px-4">
+      <main className="flex-grow flex flex-col items-center">
+        <div
+          ref={chatContainer}
+          className="w-full max-w-4xl flex-grow overflow-y-auto mb-8"
+        >
           {renderResponse()}
         </div>
         {!messages.length && (
-          <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
-          >
+          <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto">
             <div className="bg-indigo-900 rounded-lg shadow-lg border border-indigo-700 overflow-hidden">
-              <div className="flex flex-col sm:flex-row items-end p-4">
-                <div className="flex-grow w-full sm:w-auto">
+              <div className="flex items-end p-4">
+                <div className="flex-grow">
                   <textarea
                     name="input-field"
                     placeholder="Tell me your dream..."
                     onChange={handleInputChange}
                     value={input}
                     className="w-full p-4 bg-indigo-900 text-white placeholder-indigo-300 resize-none focus:outline-none"
-                    rows={4}
-                    style={{ minHeight: '100px' }}
+                    rows={1}
+                    style={{ minHeight: '56px', maxHeight: '200px' }}
                     aria-label="Dream input"
                   />
                 </div>
-                <div className="flex items-center mt-4 sm:mt-0 sm:ml-2">
+                <div className="flex items-center p-2">
                   <DreamRecorder updateInput={addRecording} />
                   <button
                     type="submit"

@@ -16,8 +16,6 @@ export const DreamRecorder = ({
   const audioStream = useRef<MediaStream>();
 
   const onStartRecording = async () => {
-    console.log('started recording');
-
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioStream.current = stream;
@@ -48,8 +46,6 @@ export const DreamRecorder = ({
     } catch (err) {
       console.error('Error accessing the microphone', err);
     }
-
-    console.log('out of start recording');
   };
 
   const onStopRecording = () => {
@@ -99,16 +95,16 @@ export const DreamRecorder = ({
           <StopCircleIcon className="mt-[15px] ml-[10px] h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
         )}
       </button>
-      {audio
+      {/* {audio
         ? audio.map((track) => (
             <div key={track} className="audio-container inline-block">
               <audio src={track} controls></audio>
-              {/* <a download href={track}>
+              { <a download href={track}>
                 Download Recording
-              </a> */}
+              </a> }
             </div>
           ))
-        : null}
+        : null} */}
     </div>
   );
 };
