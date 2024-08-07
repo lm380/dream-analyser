@@ -8,49 +8,33 @@ import * as argon2 from 'argon2';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 
-const DreamSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  content: z.string(),
-  analysis: z.string(),
-  keyElements: z.string().array(),
-  dreamer: z.any(),
-  dreamerId: z.string(),
+const CreateUser = z.object({
+  name: z.string().min(1, 'Name cannot be empty'),
+  email: z.string().email('Invalid email'),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
 });
 
-const FormSchema = z.object({
-  id: z.string(),
-  name: z.string({
-    message: 'Please enter a valid name',
-  }),
-  email: z.string().email({ message: 'Please enter a valid email' }),
-  password: z.string({}),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  dreams: z.array(DreamSchema),
+const UpdateUser = z
+  .object({
+    name: z.string().min(1, 'Name cannot be empty'),
+    password: z.string().optional(),
+    retypedPassword: z.string().optional(),
+  })
+  .refine((data) => data.password === data.retypedPassword, {
+    message: "Passwords don't match",
+    path: ['retypedPassword'],
+  });
+
+const CreateDream = z.object({
+  title: z.string().min(1, 'Title cannot be empty'),
+  analysis: z.string().min(1, 'Analysis cannot be empty'),
+  content: z.string().min(1, 'Content cannot be empty'),
+  keyElements: z.array(z.string().min(1, 'Key element cannot be empty')),
+  dreamerId: z.string().min(1, 'Dreamer ID cannot be empty'),
 });
 
-const CreateUser = FormSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  dreams: true,
-});
-const UpdateUser = CreateUser.extend({
-  retypedPassword: z.string({}),
-}).omit({
-  email: true,
-});
-const CreateDream = DreamSchema.omit({
-  id: true,
-  dreamer: true,
-});
-const UpdateLifeContext = UpdateUser.extend({
-  lifeContext: z.string(),
-}).omit({
-  retypedPassword: true,
-  password: true,
-  name: true,
+const UpdateLifeContext = z.object({
+  lifeContext: z.string().min(1, 'Life context cannot be empty'),
 });
 
 export type State = {
@@ -72,25 +56,27 @@ export async function createUser(prevState: State, formData: FormData) {
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create User',
+      message: 'Validation failed. Failed to create user.',
     };
   }
 
   const { name, email, password } = validatedFields.data;
   const encryptedPassword = await argon2.hash(password);
+
   try {
     await prisma.user.create({
       data: {
-        email: email,
-        name: name,
+        email,
+        name,
         password: encryptedPassword,
         lifeContext: '',
       },
     });
-  } catch (e) {
-    return { message: 'Database Error: Failed to Create User.' };
+  } catch (error) {
+    console.error('Error creating user:', error);
+    return { message: 'Database error. Failed to create user.' };
   }
-  redirect('/');
+  return redirect('/login');
 }
 
 export async function updateUser(
@@ -107,70 +93,55 @@ export async function updateUser(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create User',
+      message: 'Validation failed. Failed to update user.',
     };
   }
 
-  const { name, password, retypedPassword } = validatedFields.data;
-  if (retypedPassword !== password) {
-    return {
-      errors: { password: ["Passwords don't match"] },
-      message: "Passwords don't match",
-    };
-  }
+  const { name, password } = validatedFields.data;
+  const updateData: any = { name };
 
   if (password) {
-    const encryptedPassword = await argon2.hash(password);
-    try {
-      await prisma.user.update({
-        where: {
-          email: email,
-        },
-        data: {
-          name: name,
-          password: encryptedPassword,
-        },
-      });
-    } catch (e) {
-      return { message: 'Database Error: Failed to Update User.' };
-    }
-  } else {
-    try {
-      await prisma.user.update({
-        where: {
-          email: email,
-        },
-        data: {
-          name: name,
-        },
-      });
-    } catch (e) {
-      return { message: 'Database Error: Failed to Update User.' };
-    }
+    updateData.password = await argon2.hash(password);
+  }
+
+  try {
+    await prisma.user.update({
+      where: { email },
+      data: updateData,
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    return { message: 'Database error. Failed to update user.' };
   }
   redirect('/');
 }
 
 export async function updateLifeContext(
   email: string,
-  prevState: State | undefined,
+  prevState: State,
   formData: FormData
 ) {
-  const validatedCircumstances = UpdateLifeContext.safeParse({
+  const validatedFields = UpdateLifeContext.safeParse({
     lifeContext: formData.get('context'),
   });
 
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Validation failed. Failed to update life context.',
+    };
+  }
+
+  const { lifeContext } = validatedFields.data;
+
   try {
     await prisma.user.update({
-      where: {
-        email: email,
-      },
-      data: {
-        lifeContext: validatedCircumstances.data?.lifeContext,
-      },
+      where: { email },
+      data: { lifeContext },
     });
-  } catch (e) {
-    return { message: 'Database Error: Failed to Create User.' };
+  } catch (error) {
+    console.error('Error updating life context:', error);
+    return { message: 'Database error. Failed to update life context.' };
   }
 }
 
@@ -192,34 +163,30 @@ export async function createDream(
     dreamerId: dreamDetails.dreamerId,
   });
 
-  console.log(validatedFields);
-
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create Dream',
+      message: 'Validation failed. Failed to create dream.',
     };
   }
 
   const { title, content, keyElements, dreamerId, analysis } =
     validatedFields.data;
-  // const encryptedContent = await bcrypt.hash(content, 10);
-  // need to find some way to encrypt the content and decrypt hashing won't work
+
   try {
     await prismaClient.dream.create({
       data: {
-        title: title,
-        analysis: analysis,
-        content: content,
-        keyElements: keyElements,
-        dreamerId: dreamerId,
+        title,
+        analysis,
+        content,
+        keyElements,
+        dreamerId,
       },
     });
-  } catch (e) {
-    return { message: 'Database Error: Failed to Create Dream.' };
+  } catch (error) {
+    console.error('Error creating dream:', error);
+    return { message: 'Database error. Failed to create dream.' };
   }
-  //   revalidatePath('/analyser');
-  redirect('/');
 }
 
 export async function authenticate(
