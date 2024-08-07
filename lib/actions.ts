@@ -42,6 +42,7 @@ export type State = {
     name?: string[];
     email?: string[];
     password?: string[];
+    lifeContext?: string[];
   };
   message?: string | null;
 };
@@ -120,7 +121,7 @@ export async function updateLifeContext(
   email: string,
   prevState: State,
   formData: FormData
-) {
+): Promise<State> {
   const validatedFields = UpdateLifeContext.safeParse({
     lifeContext: formData.get('context'),
   });
@@ -136,13 +137,17 @@ export async function updateLifeContext(
 
   try {
     await prisma.user.update({
-      where: { email },
-      data: { lifeContext },
+      where: {
+        email: email,
+      },
+      data: {
+        lifeContext,
+      },
     });
-  } catch (error) {
-    console.error('Error updating life context:', error);
-    return { message: 'Database error. Failed to update life context.' };
+  } catch (e) {
+    return { message: 'Database Error: Failed to update life context.' };
   }
+  return { message: 'Successfully updated life context' };
 }
 
 export async function createDream(

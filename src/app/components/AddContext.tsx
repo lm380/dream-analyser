@@ -14,7 +14,7 @@ export const AddContext = ({
   const [newContext, setNewContext] = useState(currentContext);
   const updateLifeContextWithEmail = updateLifeContext.bind(null, email);
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useFormState<State | undefined, FormData>(
+  const [state, dispatch] = useFormState<State, FormData>(
     updateLifeContextWithEmail,
     initialState
   );
@@ -72,6 +72,15 @@ export const AddContext = ({
             Update context
           </button>
         </div>
+        {state.message && (
+          <p className="mt-2 text-sm text-green-500">{state.message}</p>
+        )}
+        {state.errors?.lifeContext &&
+          state.errors.lifeContext.map((error) => (
+            <p className="mt-2 text-sm text-red-500" key={error}>
+              {error}
+            </p>
+          ))}
       </form>
     </>
   );
