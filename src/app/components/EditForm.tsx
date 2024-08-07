@@ -81,6 +81,7 @@ export default function EditForm({ user }: { user: User }) {
               <input
                 id="password"
                 name="password"
+                autoComplete="new-password"
                 min={6}
                 type="password"
                 className="w-full pl-10 px-4 py-2 bg-indigo-800 border border-indigo-700 rounded-md shadow-sm text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -105,6 +106,7 @@ export default function EditForm({ user }: { user: User }) {
             <div className="relative">
               <input
                 id="password-retype"
+                autoComplete="new-password"
                 min={6}
                 name="password-retype"
                 type="password"

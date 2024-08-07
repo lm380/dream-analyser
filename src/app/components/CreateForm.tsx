@@ -82,6 +82,7 @@ export default function Form() {
         <div className="relative">
           <input
             id="password"
+            autoComplete="new-password"
             name="password"
             placeholder="Enter your password"
             minLength={6}
