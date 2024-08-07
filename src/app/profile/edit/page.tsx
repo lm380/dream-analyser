@@ -1,5 +1,4 @@
 import { auth } from '@/auth';
-import Link from 'next/link';
 import prisma from '../../../../lib/prisma';
 import EditForm from '@/app/components/EditForm';
 
@@ -14,16 +13,14 @@ export default async function Profile() {
   });
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-xl lg:flex flex-col">
-        <div className="flex justify-between w-full">
-          <p className="">Welcome {name}!</p>
-          <Link href={'/'}>Go home</Link>
-        </div>
-        <div className="w-full mt-3">
+    <div className="min-h-screen bg-indigo-950 text-white">
+      <main className="max-w-4xl mx-auto p-4 md:p-8">
+        <h1 className="text-3xl font-semibold mb-8">Edit Account</h1>
+        <div className="bg-indigo-900 rounded-lg shadow-lg p-6">
+          <p className="text-xl mb-6">Welcome, {name}!</p>
           <EditForm user={user!} />
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

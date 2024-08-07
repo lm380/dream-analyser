@@ -33,11 +33,14 @@ const ResponsiveNavigation = ({
   return (
     <nav
       className="bg-indigo-900 p-4"
-      onBlur={(e) => !e.relatedTarget && toggleMenu()}
+      onBlur={(e) => !e.relatedTarget && setIsOpen(false)}
     >
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/">
-          <span className="text-2xl font-serif text-purple-300 cursor-pointer">
+          <span
+            onClick={toggleMenu}
+            className="text-2xl font-serif text-purple-300 cursor-pointer"
+          >
             DreamScape
           </span>
         </Link>

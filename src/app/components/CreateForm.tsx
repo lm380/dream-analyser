@@ -17,23 +17,22 @@ export default function Form() {
   );
   return (
     <form action={dispatch} className="space-y-3">
-      <div className="rounded-md bg-gray-50 p-4 md:p-6">
-        <div className="mb-4">
-          <label htmlFor="name" className="mb-2 block text-sm font-medium">
-            Enter your name
-          </label>
-          <div className="relative mt-2 rounded-md">
-            <div className="relative">
-              <input
-                id="name"
-                name="name"
-                placeholder="Enter your name"
-                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                aria-describedby="name-error"
-              />
-              <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-          </div>
+      <div>
+        <label
+          htmlFor="name"
+          className="block text-sm font-medium text-indigo-200 mb-1"
+        >
+          Name
+        </label>
+        <div className="relative">
+          <input
+            id="name"
+            name="name"
+            placeholder={'Enter your name'}
+            className="w-full px-4 py-2 pl-10 bg-indigo-800 border border-indigo-700 rounded-md shadow-sm text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            aria-describedby="name-description"
+          />
+          <UserCircleIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-indigo-400" />
         </div>
       </div>
       <div id="name-error" aria-live="polite" aria-atomic="true">
@@ -45,24 +44,25 @@ export default function Form() {
           ))}
       </div>
 
-      {/* User Email */}
-      <div className="mb-4">
-        <label htmlFor="email" className="mb-2 block text-sm font-medium">
-          Enter your email address
+      <div>
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-indigo-200 mb-1"
+        >
+          Email Address
         </label>
-        <div className="relative mt-2 rounded-md">
-          <div className="relative">
-            <input
-              id="email"
-              name="email"
-              placeholder="Enter your email address"
-              className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              aria-describedby="email-error"
-            />
-            <EnvelopeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-          </div>
+        <div className="relative">
+          <input
+            id="email"
+            name="email"
+            placeholder="Enter your email address"
+            className="w-full pl-10 px-4 py-2 bg-indigo-800 border border-indigo-700 rounded-md shadow-sm text-indigo-300"
+            aria-describedby="email-error"
+          />
+          <EnvelopeIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-indigo-400" />
         </div>
       </div>
+
       <div id="email-error" aria-live="polite" aria-atomic="true">
         {state.errors?.email &&
           state.errors.email.map((error: string) => (
@@ -72,24 +72,24 @@ export default function Form() {
           ))}
       </div>
 
-      {/* User Password */}
-      <div className="mb-4">
-        <label htmlFor="password" className="mb-2 block text-sm font-medium">
-          Enter your Password
+      <div>
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-indigo-200 mb-1"
+        >
+          Password
         </label>
-        <div className="relative mt-2 rounded-md">
-          <div className="relative">
-            <input
-              id="password"
-              name="password"
-              minLength={6}
-              placeholder="Enter your password"
-              type="password"
-              className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              aria-describedby="name-error"
-            />
-            <LockClosedIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-          </div>
+        <div className="relative">
+          <input
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            minLength={6}
+            type="password"
+            className="w-full pl-10 px-4 py-2 bg-indigo-800 border border-indigo-700 rounded-md shadow-sm text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            aria-describedby="password-error"
+          />
+          <LockClosedIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-indigo-400" />
         </div>
       </div>
       <div id="password-error" aria-live="polite" aria-atomic="true">

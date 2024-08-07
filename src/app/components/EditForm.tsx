@@ -17,120 +17,135 @@ export default function EditForm({ user }: { user: User }) {
     updateUserWithEmail,
     initialState
   );
+
   return (
-    <form action={dispatch} className="space-y-3">
-      <div className="rounded-md bg-gray-50 p-4 md:p-6 text-black">
-        {/* User Name */}
-        <div className="mb-4">
+    <form action={dispatch} className="space-y-6">
+      <div className="space-y-6">
+        <div>
           <label
             htmlFor="name"
-            className="mb-2 block text-sm font-medium text-gray-400"
+            className="block text-sm font-medium text-indigo-200 mb-1"
           >
-            Enter your name
+            Name
           </label>
-          <div className="relative mt-2 rounded-md">
-            <div className="relative">
-              <input
-                id="name"
-                name="name"
-                defaultValue={user.name}
-                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                aria-describedby="name-error"
-              />
-              <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
+          <div className="relative">
+            <input
+              id="name"
+              name="name"
+              defaultValue={user.name}
+              className="w-full px-4 py-2 pl-10 bg-indigo-800 border border-indigo-700 rounded-md shadow-sm text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              aria-describedby="name-description"
+            />
+            <UserCircleIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-indigo-400" />
           </div>
+          <p id="name-description" className="mt-1 text-sm text-indigo-300">
+            Enter your full name
+          </p>
         </div>
-      </div>
-      <div id="name-error" aria-live="polite" aria-atomic="true">
-        {state.errors?.name &&
-          state.errors.name.map((error: string) => (
-            <p className="mt-2 text-sm text-red-500" key={error}>
-              {error}
-            </p>
-          ))}
-      </div>
 
-      {/* User Email */}
-      <div className="mb-4">
-        <label htmlFor="email" className="mb-2 block text-sm font-medium">
-          Enter your email address
-        </label>
-        <div className="relative mt-2 rounded-md">
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-indigo-200 mb-1"
+          >
+            Email Address
+          </label>
           <div className="relative">
             <input
               id="email"
               name="email"
               value={user.email}
               disabled
-              className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              aria-describedby="email-error"
+              className="w-full pl-10 px-4 py-2 bg-indigo-800 border border-indigo-700 rounded-md shadow-sm text-indigo-300"
+              aria-describedby="email-description"
             />
-            <EnvelopeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            <EnvelopeIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-indigo-400" />
+          </div>
+          <p id="email-description" className="mt-1 text-sm text-indigo-300">
+            Your email address cannot be changed
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-indigo-100">
+            Change Password
+          </h3>
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-indigo-200 mb-1"
+            >
+              New Password
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                name="password"
+                min={6}
+                type="password"
+                className="w-full pl-10 px-4 py-2 bg-indigo-800 border border-indigo-700 rounded-md shadow-sm text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                aria-describedby="password-description"
+              />
+              <LockClosedIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-indigo-400" />
+            </div>
+            <p
+              id="password-description"
+              className="mt-1 text-sm text-indigo-300"
+            >
+              Must be at least 6 characters long
+            </p>
+          </div>
+          <div>
+            <label
+              htmlFor="password-retype"
+              className="block text-sm font-medium text-indigo-200 mb-1"
+            >
+              Confirm New Password
+            </label>
+            <div className="relative">
+              <input
+                id="password-retype"
+                min={6}
+                name="password-retype"
+                type="password"
+                className="w-full pl-10 px-4 py-2 bg-indigo-800 border border-indigo-700 rounded-md shadow-sm text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+              <LockClosedIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-indigo-400" />
+            </div>
           </div>
         </div>
       </div>
-      <div id="email-error" aria-live="polite" aria-atomic="true">
-        {state.errors?.email &&
-          state.errors.email.map((error: string) => (
-            <p className="mt-2 text-sm text-red-500" key={error}>
-              {error}
-            </p>
-          ))}
+
+      {/* Error messages */}
+      <div className="space-y-2">
+        {Object.entries(state.errors || {}).map(([field, errors]) => (
+          <div
+            key={field}
+            id={`${field}-error`}
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {errors.map((error: string) => (
+              <p className="text-sm text-red-400" key={error}>
+                {error}
+              </p>
+            ))}
+          </div>
+        ))}
       </div>
 
-      {/* User Password */}
-      <div className="mb-4">
-        <label htmlFor="password" className="mb-2 block text-sm font-medium">
-          Enter your new password
-        </label>
-        <div className="relative mt-2 rounded-md">
-          <div className="relative">
-            <input
-              autoComplete="new-password"
-              id="password"
-              name="password"
-              placeholder="Enter your new password"
-              type="password"
-              className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              aria-describedby="password-error"
-            />
-            <LockClosedIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-          </div>
-          <div className="relative">
-            <input
-              id="password-retype"
-              name="password-retype"
-              placeholder="Please retype your new password"
-              type="password"
-              className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              aria-describedby="password-error"
-            />
-            <LockClosedIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-          </div>
-        </div>
-      </div>
-      <div id="password-error" aria-live="polite" aria-atomic="true">
-        {state.errors?.password &&
-          state.errors.password.map((error: string) => (
-            <p className="mt-2 text-sm text-red-500" key={error}>
-              {error}
-            </p>
-          ))}
-      </div>
-
-      <div className="mt-6 flex justify-end gap-4">
+      <div className="flex justify-end space-x-4">
         <Link
           href="/"
-          className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+          className="px-4 py-2 border border-indigo-600 rounded-md text-sm font-medium text-indigo-200 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Cancel
         </Link>
         <button
-          className="flex h-10 items-center rounded-lg bg-yellow-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
           type="submit"
+          className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Update account
+          Update Account
         </button>
       </div>
     </form>

@@ -114,24 +114,39 @@ export async function updateUser(
   const { name, password, retypedPassword } = validatedFields.data;
   if (retypedPassword !== password) {
     return {
-      errors: { password: ["New passwords don't match"] },
+      errors: { password: ["Passwords don't match"] },
       message: "Passwords don't match",
     };
   }
 
-  const encryptedPassword = await argon2.hash(password);
-  try {
-    await prisma.user.update({
-      where: {
-        email: email,
-      },
-      data: {
-        name: name,
-        password: encryptedPassword,
-      },
-    });
-  } catch (e) {
-    return { message: 'Database Error: Failed to Update User.' };
+  if (password) {
+    const encryptedPassword = await argon2.hash(password);
+    try {
+      await prisma.user.update({
+        where: {
+          email: email,
+        },
+        data: {
+          name: name,
+          password: encryptedPassword,
+        },
+      });
+    } catch (e) {
+      return { message: 'Database Error: Failed to Update User.' };
+    }
+  } else {
+    try {
+      await prisma.user.update({
+        where: {
+          email: email,
+        },
+        data: {
+          name: name,
+        },
+      });
+    } catch (e) {
+      return { message: 'Database Error: Failed to Update User.' };
+    }
   }
   redirect('/');
 }
