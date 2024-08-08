@@ -7,6 +7,7 @@ import { Card, ListCard } from './Card';
 import { CardSkeleton } from './CardSkeleton';
 import { extractDreamContent } from '../utils/utilityFuncs';
 import { DreamRecorder } from './DreamRecorder';
+import ResizingTextarea from './ResizingTextArea';
 
 const DreamAnalyser = () => {
   const [analysis, setAnalysis] = useState<string>('');
@@ -49,6 +50,12 @@ const DreamAnalyser = () => {
     setElementList([]);
     setMessages([]);
     setInput('');
+  };
+
+  const wrappedHandleInputChange = (value: string) => {
+    handleInputChange({
+      target: { value },
+    } as React.ChangeEvent<HTMLTextAreaElement>);
   };
 
   const renderResponse = () => {
@@ -106,15 +113,12 @@ const DreamAnalyser = () => {
             <div className="bg-indigo-900 rounded-lg shadow-lg border border-indigo-700 overflow-hidden">
               <div className="flex items-end p-4">
                 <div className="flex-grow">
-                  <textarea
-                    name="input-field"
-                    placeholder="Tell me your dream..."
-                    onChange={handleInputChange}
+                  <ResizingTextarea
                     value={input}
-                    className="w-full p-4 bg-indigo-900 text-white placeholder-indigo-300 resize-none focus:outline-none"
-                    rows={1}
-                    style={{ minHeight: '56px', maxHeight: '200px' }}
-                    aria-label="Dream input"
+                    onChange={wrappedHandleInputChange}
+                    placeholder="Tell me your dream..."
+                    className="w-full p-4 bg-indigo-900 text-white placeholder-indigo-300 focus:outline-none"
+                    minHeight="56px"
                   />
                 </div>
                 <div className="flex items-center p-2">

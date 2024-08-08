@@ -4,13 +4,19 @@ import React, { ReactNode, useState } from 'react';
 import ModalWrapper from './ModalWrapper';
 import { useModal } from '@/contexts/ModalContext';
 
+interface ModalButtonProps {
+  children: ReactNode;
+  buttonText: string;
+  styles?: string;
+  wrapperBackground?: string;
+}
+
 export const ModalButton = ({
   children,
   buttonText,
-}: {
-  children: ReactNode;
-  buttonText: string;
-}) => {
+  styles,
+  wrapperBackground,
+}: ModalButtonProps) => {
   const { setShowModal } = useModal();
 
   const openModal = () => {
@@ -21,11 +27,15 @@ export const ModalButton = ({
     <div>
       <button
         onClick={openModal}
-        className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+        className={
+          styles
+            ? styles
+            : 'bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600'
+        }
       >
         {buttonText}
       </button>
-      <ModalWrapper>{children}</ModalWrapper>
+      <ModalWrapper background={wrapperBackground}>{children}</ModalWrapper>
     </div>
   );
 };

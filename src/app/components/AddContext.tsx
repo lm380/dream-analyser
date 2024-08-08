@@ -3,6 +3,7 @@ import React, { FormEvent, useState } from 'react';
 import { State, updateLifeContext } from '../../../lib/actions';
 import { useFormState } from 'react-dom';
 import { useModal } from '@/contexts/ModalContext';
+import ResizingTextarea from './ResizingTextArea';
 
 export const AddContext = ({
   email,
@@ -46,12 +47,18 @@ export const AddContext = ({
             </label>
             <div className="relative mt-2 rounded-md">
               <div className="relative">
-                <textarea
+                <ResizingTextarea
                   id="context"
                   name="context"
                   defaultValue={newContext}
                   className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 />
+                {/* <textarea
+                  id="context"
+                  name="context"
+                  defaultValue={newContext}
+                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                /> */}
               </div>
             </div>
           </div>

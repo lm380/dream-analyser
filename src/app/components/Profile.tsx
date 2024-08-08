@@ -33,8 +33,8 @@ export const Profile = ({ initialUser }: { initialUser: UserWithDreams }) => {
     );
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-4 sm:p-8 md:p-16 lg:p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm sm:text-base md:text-lg lg:text-xl">
+    <main className="flex min-h-screen flex-col items-center justify-between sm:p-8 md:p-16 lg:p-20">
+      <div className="z-10 w-full max-w-5xl items-center justify-between text-sm sm:text-base md:text-lg lg:text-xl">
         <div className="flex flex-row w-full">
           <p className="text-xl sm:text-2xl md:text-3xl">Welcome {name}!</p>
         </div>

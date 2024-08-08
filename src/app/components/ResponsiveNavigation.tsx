@@ -38,7 +38,7 @@ const ResponsiveNavigation = ({
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/">
           <span
-            onClick={toggleMenu}
+            onClick={() => setIsOpen(false)}
             className="text-2xl font-serif text-purple-300 cursor-pointer"
           >
             DreamScape
