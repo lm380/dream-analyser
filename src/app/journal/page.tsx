@@ -15,7 +15,5 @@ export default async function JournalPage() {
     },
   });
 
-  const dreams = user?.dreams;
-
   return <Journal initialUser={user!} />;
 }

@@ -1,9 +1,9 @@
 'use client';
-import React from 'react';
-import { DreamCard } from './Card';
+import React, { ChangeEvent, useState } from 'react';
 import { Dream, User } from '@prisma/client';
 import useUser from '@/hooks/useUser';
 import { LazyDreamList } from './LazyDreamsList';
+import { SearchAndFilter } from './SearchAndFilter';
 
 interface UserWithDreams extends Partial<User> {
   dreams: Dream[];
@@ -11,7 +11,8 @@ interface UserWithDreams extends Partial<User> {
 
 export const Journal = ({ initialUser }: { initialUser: UserWithDreams }) => {
   const { user, isLoading, isError, mutate } = useUser();
-  const { name, email, lifeContext, dreams } = user || initialUser;
+  const { dreams } = user || initialUser;
+  const [dreamList, setDreamList] = useState<Dream[]>(dreams);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading user data</div>;
@@ -19,32 +20,9 @@ export const Journal = ({ initialUser }: { initialUser: UserWithDreams }) => {
   return (
     <div className="bg-indigo-900 text-white min-h-screen p-8">
       <h1 className="text-4xl font-serif mb-8">Dream History</h1>
+      <SearchAndFilter dreams={dreams} updateDreamList={setDreamList} />
 
-      {/* <SearchAndFilter /> */}
-
-      {/* <DreamList /> */}
-
-      {/* <Pagination /> */}
-
-      <LazyDreamList dreams={dreams} />
-
-      {/* <div className="flex flex-wrap gap-4 flex-row max-w-full">
-        {dreams.map((dream: Dream) => {
-          return (
-            <div
-              key={dream.id}
-              className="rounded-lg w-2/5 border border-gray-600"
-            >
-              <DreamCard
-                title={dream.title}
-                content={dream.content}
-                analysis={dream.analysis}
-                keyElements={dream.keyElements}
-              />
-            </div>
-          );
-        })}
-      </div> */}
+      <LazyDreamList dreams={dreamList} />
     </div>
   );
 };

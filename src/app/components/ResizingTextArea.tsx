@@ -54,9 +54,8 @@ const ResizingTextarea: React.FC<ResizingTextareaProps> = ({
       value={textareaValue}
       onChange={handleChange}
       placeholder={placeholder ? placeholder : ''}
-      className={`resize-none overflow-hidden ${className}`}
-      style={{ minHeight }}
-      rows={1} // Setting the initial rows to 1 for better UX
+      className={`resize-none overflow-auto min-h-[${minHeight}] max-h-40 ${className}`}
+      rows={1}
     />
   );
 };
