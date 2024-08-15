@@ -1,127 +1,121 @@
 'use client';
 
-import { Message } from 'ai';
-import { useChat } from 'ai/react';
-import { useCallback, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Card, ListCard } from './Card';
 import { CardSkeleton } from './CardSkeleton';
-import { extractDreamContent } from '../utils/utilityFuncs';
-import { DreamRecorder } from './DreamRecorder';
 import ResizingTextarea from './ResizingTextArea';
+import { DreamRecorder } from './DreamRecorder';
+import { RateLimit } from '@prisma/client';
 
-const DreamAnalyser = () => {
-  const [analysis, setAnalysis] = useState<string>('');
+interface DreamAnalyserProps {
+  rateLimitInfo?: RateLimit | null;
+}
+
+const DreamAnalyser = ({ rateLimitInfo }: DreamAnalyserProps) => {
+  const [input, setInput] = useState('');
+  const [analysis, setAnalysis] = useState('');
   const [elementList, setElementList] = useState<string[]>([]);
-  const chatContainer = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<null | string>(null);
+  const [tokensLeft, setTokensLeft] = useState(
+    100 - (rateLimitInfo?.count || 0)
+  );
 
-  let {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    setInput,
-    setMessages,
-  } = useChat({
-    api: '/api/chat',
-    onFinish: (message: Message) => {
-      const { content } = message;
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-      if (content === 'invalid dream input') {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ messages: [{ content: input, role: 'user' }] }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch analysis');
+      }
+
+      const result = await response.json();
+
+      setTokensLeft((prev) => prev - 1);
+      if (result.content === 'invalid dream input') {
         setAnalysis('Invalid');
       } else {
-        const extractedList = extractDreamContent(content, 'list') as string[];
-        const newAnalysis = extractDreamContent(content, 'analysis') as string;
-
-        setElementList(extractedList);
-        setAnalysis(newAnalysis);
+        setElementList(result.elementList);
+        setAnalysis(result.analysis);
       }
-    },
-  });
+    } catch (error) {
+      setError('An error occurred while processing your dream.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const addRecording = useCallback(
-    (recordedText: string) => {
-      setInput((prevInput) => `${prevInput} ${recordedText}`);
-    },
-    [setInput]
-  );
+  const handleRetry = () => {
+    handleSubmit({ preventDefault: () => {} });
+  };
+
+  const addRecording = (recordedText: any) => {
+    setInput((prevInput) => `${prevInput} ${recordedText}`);
+  };
 
   const newDreamHandler = () => {
     setAnalysis('');
-    setElementList([]);
-    setMessages([]);
     setInput('');
-  };
-
-  const wrappedHandleInputChange = (value: string) => {
-    handleInputChange({
-      target: { value },
-    } as React.ChangeEvent<HTMLTextAreaElement>);
-  };
-
-  const renderResponse = () => {
-    return (
-      <div className="space-y-4">
-        {messages.map((message, index) => (
-          <div key={message.id} className="text-white">
-            {message.role === 'user' ? (
-              <p className="mb-4 bg-indigo-800 p-4 rounded-lg">
-                {message.content}
-              </p>
-            ) : (
-              <>
-                {analysis ? (
-                  analysis !== 'Invalid' ? (
-                    <div className="flex flex-col md:flex-row gap-4">
-                      <div className="rounded-lg w-full md:w-1/2 border border-indigo-600">
-                        <Card title={'Analysis'} value={analysis} />
-                      </div>
-                      <div className="rounded-lg w-full md:w-1/2 border border-indigo-600">
-                        <ListCard
-                          title={'Key elements'}
-                          value={[...elementList]}
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-red-500">
-                      Oops, looks like the input was invalid
-                    </p>
-                  )
-                ) : (
-                  <CardSkeleton />
-                )}
-              </>
-            )}
-          </div>
-        ))}
-      </div>
-    );
+    setElementList([]);
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-indigo-950 pb-28 pt-8 px-4">
+    <div className="flex flex-col min-h-[90vh] w-full bg-indigo-950 pb-8 pt-8 px-4">
+      <p className="self-end">Tokens left for the month: {tokensLeft}/100</p>
       <h1 className="text-4xl font-serif mb-8">Record a Dream</h1>
       <main className="flex-grow flex flex-col items-center">
-        <div
-          ref={chatContainer}
-          className="w-full max-w-4xl flex-grow overflow-y-auto mb-8"
-        >
-          {renderResponse()}
+        <div className="w-full max-w-4xl flex-grow overflow-y-auto mb-8">
+          {loading ? (
+            <CardSkeleton />
+          ) : (
+            <div className="space-y-4">
+              {analysis && analysis !== 'Invalid' ? (
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="rounded-lg w-full md:w-1/2 border border-indigo-600">
+                    <Card title={'Analysis'} value={analysis} />
+                  </div>
+                  <div className="rounded-lg w-full md:w-1/2 border border-indigo-600">
+                    <ListCard title={'Key elements'} value={[...elementList]} />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {error && <div className="text-red-500">{error}</div>}
+                  {analysis === 'Invalid' && (
+                    <p className="text-red-500">
+                      Invalid input, please try again.
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </div>
-        {!messages.length && (
+        {!analysis && (
           <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto">
             <div className="bg-indigo-900 rounded-lg shadow-lg border border-indigo-700 overflow-hidden">
               <div className="flex items-end p-4">
                 <div className="flex-grow">
                   <ResizingTextarea
                     value={input}
-                    onChange={wrappedHandleInputChange}
+                    onChange={(e) => setInput(e)}
                     placeholder="Tell me your dream..."
                     className="w-full p-4 bg-indigo-900 text-white placeholder-indigo-300 focus:outline-none"
                     minHeight="56px"
                   />
                 </div>
-                <div className="flex items-center p-2">
+                <div className="flex items-baseline p-2">
                   <DreamRecorder updateInput={addRecording} />
                   <button
                     type="submit"
@@ -143,7 +137,7 @@ const DreamAnalyser = () => {
             </div>
           </form>
         )}
-        {messages.length > 0 && (
+        {analysis && (
           <button
             type="button"
             onClick={newDreamHandler}
