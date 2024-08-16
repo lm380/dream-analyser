@@ -18,17 +18,33 @@ export const Profile = ({ initialUser }: { initialUser: UserWithDreams }) => {
   const { name, email, lifeContext, dreams, encryptionKey } =
     user || initialUser;
   const [dreamList, setDreamList] = useState<Dream[]>([]);
+  const [isDecryptionError, setIsDecryptionError] = useState(false);
 
   useEffect(() => {
-    if (encryptionKey) {
-      const decryptedDreams = [...dreams].map((dream: Dream) => {
-        return {
-          ...dream,
-          content: decryptWithUserKey(dream.content, encryptionKey),
-        };
-      });
-      setDreamList(decryptedDreams);
-    }
+    const fetchAndDecryptDreams = async () => {
+      if (dreams && encryptionKey) {
+        try {
+          const decryptedDreams = dreams.map((dream: Dream) => {
+            try {
+              return {
+                ...dream,
+                content: decryptWithUserKey(dream.content, encryptionKey),
+              };
+            } catch (error) {
+              console.error(`Failed to decrypt dream ID ${dream.id}`, error);
+              setIsDecryptionError(true);
+              return dream; // Return the original dream if decryption fails
+            }
+          });
+          setDreamList(decryptedDreams);
+        } catch (error) {
+          console.error('Error decrypting dreams:', error);
+          setIsDecryptionError(true);
+        }
+      }
+    };
+
+    fetchAndDecryptDreams();
   }, [dreams, encryptionKey]);
 
   const newestDreams = useMemo(() => {
@@ -47,6 +63,8 @@ export const Profile = ({ initialUser }: { initialUser: UserWithDreams }) => {
         Error loading user data
       </div>
     );
+  if (isDecryptionError)
+    return <div>Error decrypting dreams. Some content may be missing.</div>;
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between sm:p-8 md:p-16 lg:p-20">
