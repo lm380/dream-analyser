@@ -1,12 +1,13 @@
 'use client';
 import { ModalProvider } from '@/contexts/ModalContext';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { AddContext } from './AddContext';
 import { DreamCard } from './Card';
 import { ModalButton } from './ModalButton';
 import { Dream, User } from '@prisma/client';
 import useUser from '@/hooks/useUser';
 import { DreamFrequencyChart } from './DreamFrequencyChart';
+import { decryptWithUserKey } from '../utils/utilityFuncs';
 
 interface UserWithDreams extends Partial<User> {
   dreams: Dream[];
@@ -14,10 +15,25 @@ interface UserWithDreams extends Partial<User> {
 
 export const Profile = ({ initialUser }: { initialUser: UserWithDreams }) => {
   const { user, isLoading, isError, mutate } = useUser();
-  const { name, email, lifeContext, dreams } = user || initialUser;
+  const { name, email, lifeContext, dreams, encryptionKey } =
+    user || initialUser;
+  const [dreamList, setDreamList] = useState<Dream[]>([]);
+
+  useEffect(() => {
+    if (encryptionKey) {
+      const decryptedDreams = [...dreams].map((dream: Dream) => {
+        return {
+          ...dream,
+          content: decryptWithUserKey(dream.content, encryptionKey),
+        };
+      });
+      setDreamList(decryptedDreams);
+    }
+  }, [dreams, encryptionKey]);
+
   const newestDreams = useMemo(() => {
-    return [...dreams].reverse().slice(0, 4);
-  }, [dreams]);
+    return [...dreamList].reverse().slice(0, 4);
+  }, [dreamList]);
 
   if (isLoading)
     return (

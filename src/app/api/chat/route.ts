@@ -2,7 +2,11 @@
 import { auth } from '@/auth';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
 import { OpenAI } from 'openai';
-import { extractDreamContent } from '@/app/utils/utilityFuncs';
+import {
+  encryptWithUserKey,
+  extractDreamContent,
+  getEncryptionKey,
+} from '@/app/utils/utilityFuncs';
 import prisma from '../../../../lib/prisma';
 import { NextResponse } from 'next/server';
 
@@ -120,16 +124,21 @@ export async function POST(req: Request) {
     const title = `${elementList[0]} Dream`;
 
     // Save to database
-    await prisma.dream.create({
-      data: {
-        title,
-        content: messages[0].content,
-        theme,
-        analysis,
-        keyElements: elementList,
-        userId: user?.id || '',
-      },
-    });
+    const encryptionKey = await getEncryptionKey(user?.id!);
+    const dreamContent = messages[0].content;
+    if (encryptionKey) {
+      const encryptedContent = encryptWithUserKey(dreamContent, encryptionKey);
+      await prisma.dream.create({
+        data: {
+          title,
+          content: encryptedContent,
+          theme,
+          analysis,
+          keyElements: elementList,
+          userId: user?.id || '',
+        },
+      });
+    }
 
     // Return the analysis, elements, and theme to the frontend
     return NextResponse.json({ analysis, elementList, theme }, { status: 200 });
@@ -140,34 +149,4 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-
-  // const stream = OpenAIStream(res, {
-  //   async onCompletion(completion: any) {
-  //     if (completion === 'invalid dream input') {
-  //       return;
-  //     }
-  //     const dreamContent = json.messages[0].content;
-  //     const elementList = extractDreamContent(completion, 'list') as string[];
-  //     const title = `${elementList[0]} Dream`;
-  //     const analysis = extractDreamContent(completion, 'analysis') as string;
-  //     const theme = extractDreamContent(completion, 'theme') as string;
-  //     const user = await getInfo();
-  //     try {
-  //       await prisma.dream.create({
-  //         data: {
-  //           title: title,
-  //           content: dreamContent,
-  //           theme: theme,
-  //           analysis: analysis,
-  //           keyElements: elementList,
-  //           userId: user?.id || '',
-  //         },
-  //       });
-  //     } catch (e) {
-  //       console.error(e);
-  //     }
-  //   },
-  // });
-
-  // return new StreamingTextResponse(stream);
 }

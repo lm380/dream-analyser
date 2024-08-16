@@ -12,6 +12,7 @@ import NextAuth, {
   Session,
 } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
+import { generateEncryptionKey } from './app/utils/utilityFuncs';
 
 async function getUser(email: string): Promise<User | null> {
   try {
@@ -72,16 +73,18 @@ export const authOptions = {
       if (params.account?.provider === 'google') {
         const email = params.user.email ?? '';
         const name = params.user.name ?? 'Unknown user';
-        const defaultPassword = await argon2.hash('123456');
+        const defaultPassword = await argon2.hash('12345678');
 
         // Check if user already exists
         const existingUser = await prisma.user.findUnique({ where: { email } });
         if (!existingUser) {
           // Create a new user if not exists
+          const encryptionKey = generateEncryptionKey();
           await prisma.user.create({
             data: {
               email,
               name,
+              encryptionKey,
               password: defaultPassword,
             },
           });

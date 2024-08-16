@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
       name: true,
       dreams: true,
       lifeContext: true,
+      encryptionKey: true,
     },
   });
 

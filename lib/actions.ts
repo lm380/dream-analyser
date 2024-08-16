@@ -7,6 +7,7 @@ import { PrismaClient } from '@prisma/client/extension';
 import * as argon2 from 'argon2';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import { generateEncryptionKey } from '@/app/utils/utilityFuncs';
 
 const CreateUser = z.object({
   name: z.string().min(1, 'Name cannot be empty'),
@@ -63,6 +64,7 @@ export async function createUser(prevState: State, formData: FormData) {
 
   const { name, email, password } = validatedFields.data;
   const encryptedPassword = await argon2.hash(password);
+  const encryptionKey = generateEncryptionKey();
 
   try {
     await prisma.user.create({
@@ -71,6 +73,7 @@ export async function createUser(prevState: State, formData: FormData) {
         name,
         password: encryptedPassword,
         lifeContext: '',
+        encryptionKey: encryptionKey,
       },
     });
   } catch (error) {

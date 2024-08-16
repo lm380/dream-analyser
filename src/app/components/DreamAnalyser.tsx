@@ -91,7 +91,18 @@ const DreamAnalyser = ({ rateLimitInfo }: DreamAnalyserProps) => {
                 </div>
               ) : (
                 <>
-                  {error && <div className="text-red-500">{error}</div>}
+                  {error && (
+                    <div className="text-red-500">
+                      {error}
+                      <button
+                        type="button"
+                        onClick={handleRetry}
+                        className="mt-4 px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-600 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-700"
+                      >
+                        Try again?
+                      </button>
+                    </div>
+                  )}
                   {analysis === 'Invalid' && (
                     <p className="text-red-500">
                       Invalid input, please try again.
@@ -120,7 +131,7 @@ const DreamAnalyser = ({ rateLimitInfo }: DreamAnalyserProps) => {
                   <button
                     type="submit"
                     className="ml-2 p-2 rounded-full bg-[#fdef96] text-indigo-900 hover:bg-[#fceb6a] transition-colors focus:outline-none focus:ring-2 focus:ring-[#fdef96]"
-                    disabled={!input.trim()}
+                    disabled={!input.trim() || loading}
                     aria-label="Submit dream"
                   >
                     <svg
